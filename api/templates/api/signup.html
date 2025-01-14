@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Signup</title>
+</head>
+<body>
+    <h1>Signup</h1>
+    {% if error %}
+    <p style="color:red;">{{ error }}</p>
+    {% endif %}
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <label for="id_username">Username</label>
+            <input type="text" name="username" id="id_username" required>
+        </div>
+        <div>
+            <label for="id_name">Name</label>
+            <input type="text" name="name" id="id_name">
+        </div>
+        <div>
+            <label for="id_date_of_birth">Date of Birth</label>
+            <input type="date" name="date_of_birth" id="id_date_of_birth">
+        </div>
+        <div>
+            <label for="id_email">Email</label>
+            <input type="email" name="email" id="id_email" required>
+        </div>
+        <div>
+            <label for="id_password">Password</label>
+            <input type="password" name="password" id="id_password" required>
+        </div>
+        <button type="submit">Sign up</button>
+    </form>
+    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+</body>
+</html>
