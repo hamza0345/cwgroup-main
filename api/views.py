@@ -33,6 +33,8 @@ def signup_view(request: HttpRequest) -> HttpResponse:
             user = form.save()
             # After creation, we can either auto-login or redirect to login
             return redirect('login')
+        else:
+            print(form.errors)  # Log errors for debugging
         return render(request, 'api/signup.html', {'form': form})
     else:
         form = SignupForm()
