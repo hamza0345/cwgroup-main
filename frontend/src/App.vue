@@ -37,8 +37,8 @@ export default defineComponent({
       <div>
         <router-link :to="{ name: 'MainPage' }">Main Page</router-link>
         |
-        <router-link :to="{ name: 'OtherPage' }">Other Page</router-link>
-        |
+        // <router-link :to="{ name: 'OtherPage' }">Other Page</router-link>
+        // |
         <router-link :to="{ name: 'ProfilePage' }">Profile Page</router-link>
         |
         <router-link :to="{ name: 'HobbiesPage' }">Hobbies Page</router-link>

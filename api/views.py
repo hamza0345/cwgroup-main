@@ -15,6 +15,10 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
+from django.conf import settings
+from django.shortcuts import redirect
+from django.http import HttpRequest, HttpResponse
+
 
 # Import forms and models
 from .forms import SignupForm, SigninForm, ProfileUpdateForm
@@ -75,10 +79,14 @@ def logout_view(request: HttpRequest) -> HttpResponse:
 @login_required
 def main_spa(request: HttpRequest) -> HttpResponse:
     """
-    The main entry point for the Vue SPA.
-    Only accessible if user is authenticated.
+    Redirects the authenticated user to the Vue SPA (localhost:5174).
     """
-    return render(request, 'api/spa/index.html', {})
+    if settings.DEBUG:
+        # Redirect to Vue development server during development
+        return redirect('http://localhost:5174/')
+    else:
+        # Serve the production Vue SPA from Django (e.g., index.html)
+        return render(request, 'api/spa/index.html', {})
 
 
 @login_required
