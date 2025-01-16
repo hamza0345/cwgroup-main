@@ -1,5 +1,3 @@
-# api/views_api.py
-
 from datetime import date, timedelta
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
@@ -15,6 +13,16 @@ from .serializers import (
     HobbySerializer,
     FriendRequestSerializer
 )
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def current_user_view(request):
+    """
+    Returns the currently logged-in user's details.
+    """
+    user = request.user
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
 
 
 @api_view(['GET', 'POST'])
