@@ -5,7 +5,7 @@ from .models import CustomUser, Hobby
 class SignupForm(UserCreationForm):
     """
     For server-side signup with extra fields:
-      - name (first_name)
+      - name
       - email
       - date_of_birth
     """
@@ -17,7 +17,7 @@ class SignupForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = CustomUser
-        fields = ['username', 'email', 'first_name', 'password1', 'password2', 'date_of_birth']
+        fields = ['username', 'email', 'name', 'password1', 'password2', 'date_of_birth']
 
 class SigninForm(AuthenticationForm):
     """
