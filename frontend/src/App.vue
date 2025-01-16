@@ -36,11 +36,8 @@ export default defineComponent({
     <main class="container pt-4">
       <div class="mb-4 text-center link-holder">
         <router-link :to="{ name: 'MainPage' }">Main Page</router-link>
-        |
         <router-link :to="{ name: 'ProfilePage' }">Profile Page</router-link>
-        |
         <router-link :to="{ name: 'HobbiesPage' }">Hobbies Page</router-link>
-        |
         <router-link :to="{ name: 'UsersPage' }">Users Page</router-link>
       </div>
       <RouterView class="flex-shrink-0" />
