@@ -15,12 +15,9 @@ class CustomUser(AbstractUser):
     """
     Our custom User model. Must match the 'api.CustomUser' reference in settings.py.
     """
+    name = models.CharField(max_length=150, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     hobbies = models.ManyToManyField(Hobby, blank=True, related_name='users_with_this_hobby')
-
-    @property
-    def name(self) -> str:
-        return self.first_name or ""
 
 class FriendRequest(models.Model):
     """

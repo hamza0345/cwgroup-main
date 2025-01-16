@@ -42,7 +42,6 @@ export default defineComponent({
     const editHobbies = ref('');
 
     onMounted(async () => {
-      // Attempt to get user ID from store or fallback to localStorage
       const userId =
         userStore.currentUser?.id ||
         parseInt(localStorage.getItem('myUserId') || '0', 10);
@@ -51,7 +50,6 @@ export default defineComponent({
         await userStore.fetchMe(userId);
         await hobbyStore.fetchHobbies();
 
-        // Initialise form fields with user data
         if (userStore.currentUser) {
           editName.value = userStore.currentUser.name;
           editEmail.value = userStore.currentUser.email;

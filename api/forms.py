@@ -30,7 +30,7 @@ class SigninForm(AuthenticationForm):
 class ProfileUpdateForm(UserChangeForm):
     """
     Allows editing:
-      - first_name (name)
+      - name
       - email
       - date_of_birth
       - hobbies (via ModelMultipleChoiceField)
@@ -48,5 +48,4 @@ class ProfileUpdateForm(UserChangeForm):
 
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'email', 'date_of_birth', 'hobbies']
-        # We won't let them change username/password here, or we can add password if you prefer
+        fields = ['name', 'email', 'date_of_birth', 'hobbies']

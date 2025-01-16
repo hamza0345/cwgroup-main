@@ -4,10 +4,11 @@ import type { IUser } from '../types';
 import { getCsrfToken } from '../utils/csrf';
 
 export const useUserStore = defineStore('userStore', () => {
-  // We call this `currentUser` so the router can check `currentUser`.
   const currentUser = ref<IUser | null>(null);
+  const users = ref<IUser[]>([]);
+  const hasNext = ref(false);
+  const totalPages = ref(1);
 
-  // Fetch user by ID (GET /api/users/<id>/)
   async function fetchMe(userId: number) {
     try {
       const response = await fetch(`/api/users/${userId}/`, {
@@ -26,8 +27,6 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  // Fetch the currently logged-in user (e.g. GET /api/users/current/)
-  // Adjust the endpoint to however your backend provides the logged-in user data.
   async function fetchCurrentUser() {
     try {
       const response = await fetch('/api/users/current/', {
@@ -46,7 +45,27 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  // Update user’s data (PUT /api/users/<id>/)
+  async function fetchUsers(params: URLSearchParams) {
+    try {
+      const response = await fetch(`/api/users/?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      if (!response.ok) {
+        console.error('Error fetching users');
+        return;
+      }
+      const data = await response.json();
+      users.value = data.users;
+      hasNext.value = data.has_next;
+      totalPages.value = data.total_pages;
+    } catch (error) {
+      console.error('Error in fetchUsers:', error);
+    }
+  }
+
   async function updateProfile(userId: number, newUserData: Partial<IUser>) {
     try {
       const response = await fetch(`/api/users/${userId}/`, {
@@ -68,7 +87,6 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  // Send friend request (POST /api/friend-requests/)
   async function sendFriendRequest(toUserId: number) {
     try {
       const response = await fetch('/api/friend-requests/', {
@@ -91,8 +109,12 @@ export const useUserStore = defineStore('userStore', () => {
 
   return {
     currentUser,
+    users,
+    hasNext,
+    totalPages,
     fetchMe,
     fetchCurrentUser,
+    fetchUsers,
     updateProfile,
     sendFriendRequest,
   };

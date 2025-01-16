@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'email',
-            'first_name',
+            'name',
             'date_of_birth',
             'hobbies',
         ]
@@ -35,7 +35,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'email', 'date_of_birth', 'hobbies']
+        fields = ['name', 'email', 'date_of_birth', 'hobbies']
 
     def update(self, instance, validated_data):
         # Handle hobbies by name

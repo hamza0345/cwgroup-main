@@ -12,7 +12,7 @@
     </div>
 
     <ul>
-      <li v-for="user in users" :key="user.id">
+      <li v-for="user in userStore.users" :key="user.id">
         <strong>{{ user.name }}</strong>
         ({{ user.common_hobbies }} common hobbies)
         <button @click="sendFriendRequest(user.id)">Send Friend Request</button>
@@ -26,9 +26,9 @@
       >
         Previous
       </button>
-      <span class="page-info">Page {{ page }} of {{ totalPages }}</span>
+      <span>Page {{ page }} of {{ userStore.totalPages }}</span>
       <button
-        :disabled="!hasNext"
+        :disabled="!userStore.hasNext"
         @click="nextPage"
       >
         Next
@@ -39,39 +39,24 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
-import { IUser } from '../types';
-import { getCsrfToken } from '../utils/csrf';
+import { useUserStore } from '../stores/userStore';
 
 export default defineComponent({
   name: 'UsersPage',
   setup() {
-    const users = ref<IUser[]>([]);
+    const userStore = useUserStore();
     const minAge = ref<number | null>(null);
     const maxAge = ref<number | null>(null);
     const page = ref(1);
-    const hasNext = ref(false);
-    const totalPages = ref(1);
 
     const fetchUsers = async () => {
       const params = new URLSearchParams();
       params.append('page', page.value.toString());
-      if (minAge.value !== null) {
-        params.append('min_age', minAge.value.toString());
-      }
-      if (maxAge.value !== null) {
-        params.append('max_age', maxAge.value.toString());
-      }
+      if (minAge.value) params.append('min_age', minAge.value.toString());
+      if (maxAge.value) params.append('max_age', maxAge.value.toString());
 
       try {
-        const resp = await fetch('/api/users/?' + params.toString());
-        if (!resp.ok) {
-          throw new Error('Failed to fetch users');
-        }
-        const data = await resp.json();
-        users.value = data.results;
-        hasNext.value = data.has_next;
-        page.value = data.page;
-        totalPages.value = data.total_pages;
+        await userStore.fetchUsers(params);
       } catch (error) {
         console.error(error);
       }
@@ -90,7 +75,7 @@ export default defineComponent({
     };
 
     const nextPage = () => {
-      if (hasNext.value) {
+      if (userStore.hasNext) {
         page.value++;
         fetchUsers();
       }
@@ -98,19 +83,7 @@ export default defineComponent({
 
     const sendFriendRequest = async (toUserId: number) => {
       try {
-        const resp = await fetch('/api/friend-requests/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken(),
-          },
-          body: JSON.stringify({ to_user_id: toUserId }),
-        });
-        if (!resp.ok) {
-          const errData = await resp.json();
-          alert(errData.error || 'Error sending friend request');
-          return;
-        }
+        await userStore.sendFriendRequest(toUserId);
         alert('Friend request sent!');
       } catch (error) {
         console.error(error);
@@ -122,12 +95,10 @@ export default defineComponent({
     });
 
     return {
-      users,
+      userStore,
       minAge,
       maxAge,
       page,
-      hasNext,
-      totalPages,
       applyFilter,
       prevPage,
       nextPage,
