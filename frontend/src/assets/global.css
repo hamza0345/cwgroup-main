@@ -91,10 +91,13 @@ p a:hover {
     text-align: center;
 }
 
+
 .link-holder a {
     margin-right: 10px;
     color: #4CAF50;
     text-decoration: none;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .page-info{
@@ -118,4 +121,8 @@ label {
 #newHobby{
     width: 100%;
     margin-bottom: 10px;
+}
+
+.router-link-active{
+    border-bottom: #45a049a2 solid 5px;
 }
