@@ -26,7 +26,7 @@
       >
         Previous
       </button>
-      <span>Page {{ page }} of {{ userStore.totalPages }}</span>
+      <span class="page-info">Page {{ page }} of {{ userStore.totalPages }}</span>
       <button
         :disabled="!userStore.hasNext"
         @click="nextPage"

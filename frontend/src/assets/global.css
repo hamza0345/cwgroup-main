@@ -132,4 +132,10 @@ label {
 li {
     list-style-type:square;
     margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+}
+
+li > button {
+    width: 42%;
 }
