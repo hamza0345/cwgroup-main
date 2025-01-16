@@ -1,29 +1,3 @@
-<!-- <template>
-  <div class="h1">
-    {{ title }}
-  </div>
-</template>
-
-<script lang="ts">
-    import { defineComponent } from "vue";
-
-    export default defineComponent({
-        data() {
-            return {
-                title: "Main Page",
-            }
-        }
-    })
-</script>
-
-<style scoped>
-</style> -->
-
-
-
-
-
-
 <template>
   <div class="main-page">
     <header>
@@ -67,5 +41,3 @@ main p {
   line-height: 1.5;
 }
 </style>
-
-
