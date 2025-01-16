@@ -1,4 +1,6 @@
-/* Global reset */
+:root{
+    --primary-color: #ae8ffc;
+}
 
 body {
     font-family: Arial, sans-serif;
@@ -43,7 +45,7 @@ form input, form select, form textarea {
 button {
     width: 100%;
     padding: 10px;
-    background-color: #4CAF50;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 4px;
@@ -52,7 +54,7 @@ button {
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: var(--primary-color);
 }
 
 /* Links */
@@ -61,7 +63,7 @@ p {
 }
 
 p a {
-    color: #4CAF50;
+    color: var(--primary-color);
     text-decoration: none;
 }
 
@@ -94,7 +96,7 @@ p a:hover {
 
 .link-holder a {
     margin-right: 10px;
-    color: #4CAF50;
+    color: var(--primary-color);
     text-decoration: none;
     margin-left: 20px;
     margin-right: 20px;
@@ -124,5 +126,10 @@ label {
 }
 
 .router-link-active{
-    border-bottom: #45a049a2 solid 5px;
+    border-bottom: var(--primary-color) solid 5px;
+}
+
+li {
+    list-style-type:square;
+    margin-top: 30px;
 }

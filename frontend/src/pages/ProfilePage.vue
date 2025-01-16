@@ -120,13 +120,9 @@ input {
 button {
   padding: 10px 15px;
   font-size: 1rem;
-  background-color: teal;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-}
-button:hover {
-  background-color: darkcyan;
 }
 </style>
