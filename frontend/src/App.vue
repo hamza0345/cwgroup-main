@@ -34,7 +34,7 @@ export default defineComponent({
 
 <template>
     <main class="container pt-4">
-      <div>
+      <div class="mb-4 text-center link-holder">
         <router-link :to="{ name: 'MainPage' }">Main Page</router-link>
         |
         <router-link :to="{ name: 'ProfilePage' }">Profile Page</router-link>

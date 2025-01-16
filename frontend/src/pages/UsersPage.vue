@@ -26,7 +26,7 @@
         >
           Previous
         </button>
-        <span>Page {{ page }} of {{ totalPages }}</span>
+        <span class="page-info">Page {{ page }} of {{ totalPages }}</span>
         <button
           :disabled="!hasNext"
           @click="nextPage"

@@ -56,7 +56,7 @@ export default defineComponent({
 }
 
 header h1 {
-  color: teal;
+  color: #333;
   font-size: 2rem;
   margin-bottom: 10px;
 }
