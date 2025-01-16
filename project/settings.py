@@ -90,8 +90,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Static files
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'api', 'static'),
+    BASE_DIR / 'frontend/',
 ]
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Internationalisation

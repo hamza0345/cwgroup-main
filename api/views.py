@@ -53,7 +53,5 @@ def logout_view(request):
 
 @login_required
 def main_spa(request):
-    if settings.DEBUG:
-        return redirect('http://localhost:5174/')
-    else:
-        return render(request, 'api/spa/index.html', {})
+    # Always load the built spa/index.html
+    return render(request, 'api/spa/index.html', {})
