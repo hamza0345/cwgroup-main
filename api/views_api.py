@@ -95,11 +95,11 @@ def user_list_view(request):
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def user_detail_view(request, user_id: int):
-    """
-    GET: Returns user details (including hobbies).
-    PUT: Updates user’s profile data (name, email, date_of_birth, hobbies).
-    """
     user_obj = get_object_or_404(CustomUser, pk=user_id)
+    # If the user is trying to update someone else’s profile, forbid it:
+    if request.method == 'PUT' and request.user.id != user_obj.id:
+        return Response({'error': 'You cannot edit another user’s profile.'},
+                        status=status.HTTP_403_FORBIDDEN)
 
     if request.method == 'GET':
         serializer = UserSerializer(user_obj)
@@ -109,24 +109,7 @@ def user_detail_view(request, user_id: int):
         # Use a separate serializer for updates
         serializer = UserUpdateSerializer(user_obj, data=request.data, partial=True)
         if serializer.is_valid():
-            updated_user = serializer.save()
-
-            # If you want to handle hobby creation by name here, do so:
-            if 'hobbies' not in request.data:
-                # If you don’t send the hobbies list, skip
-                pass
-            else:
-                # Here, request.data['hobbies'] might be a list of IDs or names
-                # if you prefer them by name, you'd do something like:
-                # new_hobbies = request.data['hobbies']
-                # hobby_objs = []
-                # for h_name in new_hobbies:
-                #     hobby_obj, _ = Hobby.objects.get_or_create(name=h_name)
-                #     hobby_objs.append(hobby_obj)
-                # updated_user.hobbies.set(hobby_objs)
-
-                pass
-
+            serializer.save()
             return Response({'message': 'User updated successfully'})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
