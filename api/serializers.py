@@ -29,17 +29,24 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    """
-    A separate serializer if you want to allow editing certain fields
-    (name, email, date_of_birth, hobbies, etc.)
-    """
-    # By default, fields that are M2M must be handled carefully.
-    # We'll treat hobbies as a list of hobby names or IDs, see update logic in the view.
-    hobbies = serializers.PrimaryKeyRelatedField(queryset=Hobby.objects.all(), many=True, required=False)
+    hobbies = serializers.ListField(
+        child=serializers.CharField(), required=False
+    )
 
     class Meta:
         model = CustomUser
         fields = ['first_name', 'email', 'date_of_birth', 'hobbies']
+
+    def update(self, instance, validated_data):
+        # Handle hobbies by name
+        hobbies_data = validated_data.pop('hobbies', [])
+        hobbies = []
+        for hobby_name in hobbies_data:
+            hobby, created = Hobby.objects.get_or_create(name=hobby_name)
+            hobbies.append(hobby)
+        instance.hobbies.set(hobbies)
+        return super().update(instance, validated_data)
+
 
 
 class FriendRequestSerializer(serializers.ModelSerializer):
