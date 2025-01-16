@@ -27,6 +27,7 @@ from .views_api import (
     user_detail_view,
     friend_request_view,
     hobby_list_create_view,
+    current_user_view,  # Added this import
 )
 
 urlpatterns = [
@@ -39,8 +40,10 @@ urlpatterns = [
     # RESTful endpoints
     path('api/users/', user_list_view, name='user-list'),
     path('api/users/<int:user_id>/', user_detail_view, name='user-detail'),
+    path('api/users/current/', current_user_view, name='current-user'),  # Added this route
     path('api/friend-requests/', friend_request_view, name='friend-request'),
     path('api/hobbies/', hobby_list_create_view, name='hobbies-view'),
 ]
+
 
 
