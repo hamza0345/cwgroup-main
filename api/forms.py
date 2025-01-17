@@ -9,7 +9,6 @@ class SignupForm(UserCreationForm):
       - email
       - date_of_birth
     """
-
     date_of_birth = forms.DateField(
         required=False,
         widget=forms.DateInput(attrs={'type': 'date'})
@@ -19,13 +18,14 @@ class SignupForm(UserCreationForm):
         model = CustomUser
         fields = ['username', 'email', 'name', 'password1', 'password2', 'date_of_birth']
 
+
 class SigninForm(AuthenticationForm):
     """
     For server-side login form.
     """
-
     username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Username'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+
 
 class ProfileUpdateForm(UserChangeForm):
     """

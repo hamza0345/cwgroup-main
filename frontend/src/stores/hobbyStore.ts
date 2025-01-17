@@ -10,7 +10,7 @@ export const useHobbyStore = defineStore('hobbyStore', () => {
     try {
       const response = await fetch('/api/hobbies/', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
       if (!response.ok) {
         console.error('Error fetching hobbies');
@@ -36,7 +36,7 @@ export const useHobbyStore = defineStore('hobbyStore', () => {
       if (!response.ok) {
         throw new Error('Failed to create hobby');
       }
-      // We could parse the returned data, but let's simply refetch:
+      // After creating, we refetch the global list so everything is up to date
       await fetchHobbies();
     } catch (error) {
       console.error('Error adding a hobby:', error);

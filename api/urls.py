@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-# api/urls.py
+
 
 from django.urls import path
 from .views import (
@@ -27,7 +27,7 @@ from .views_api import (
     user_detail_view,
     friend_request_view,
     hobby_list_create_view,
-    current_user_view,  # Added this import
+    current_user_view,
 )
 
 urlpatterns = [
@@ -40,7 +40,7 @@ urlpatterns = [
     # RESTful endpoints
     path('api/users/', user_list_view, name='user-list'),
     path('api/users/<int:user_id>/', user_detail_view, name='user-detail'),
-    path('api/users/current/', current_user_view, name='current-user'),  # Added this route
+    path('api/users/current/', current_user_view, name='current-user'),
     path('api/friend-requests/', friend_request_view, name='friend-request'),
     path('api/hobbies/', hobby_list_create_view, name='hobbies-view'),
 ]
