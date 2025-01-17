@@ -126,7 +126,10 @@ class TestE2E(StaticLiveServerTestCase):
         self.fill_input_by_xpath_hobby("Add a New Hobby:", "Hiking")
         self.click_button("//button[contains(text(),'Add Hobby')]")
         self.fill_input_by_xpath_hobby("Add a New Hobby:", "Reading")
-        self.click_button("//button[contains(text(),'Add Hobby')]")
+        self.click_button("//button[contains(text(),'Add to My Hobbies')]")
+
+        alert_text = self.driver.switch_to.alert
+        alert_text.accept()
 
         # Navigate to Profile tab
         self.click_button('//a[contains(text(),"Profile")]')
