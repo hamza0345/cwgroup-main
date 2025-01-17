@@ -106,52 +106,52 @@ class TestE2E(StaticLiveServerTestCase):
     #     )
     #     self.assertIn("Welcome to the Hobbies SPA", self.driver.page_source)
 
-    def test_2_edit_profile(self):
-        """
-        Test editing user profile details via Profile tab.
-        """
-        # Sign up & log in
-        self.sign_up_user("testuser", "test@example.com", "Test User", "SecurePass123!", "2000-01-01")
-        self.login_user("testuser", "SecurePass123!")
-
-        # Navigate to Profile tab
-        self.click_button('//a[contains(text(),"Profile")]')
-
-        # Edit profile details
-        self.fill_input_by_xpath("Name:", "Updated User")
-        self.fill_input_by_xpath("Email:", "updated@example.com")
-        self.fill_input_by_xpath("Date of Birth:", "12-12-1990")
-        # self.fill_input_by_xpath("Hobbies (comma-separated):", "Reading, Hiking")
-
-        # Save changes
-        self.click_button("//button[contains(text(),'Save')]")
-
-        # Verify success alert
-        alert_text = self.driver.switch_to.alert
-        self.assertIn("Profile updated successfully!", alert_text.text)
-        alert_text.accept()
-
-    # def test_3_users_page_filter(self):
+    # def test_2_edit_profile(self):
     #     """
-    #     Test filtering users by age.
+    #     Test editing user profile details via Profile tab.
     #     """
-    #     # Create two users
-    #     self.sign_up_user("testuser1", "user1@example.com", "User One", "SecurePass123!", "2000-01-01")
-    #     self.sign_up_user("testuser2", "user2@example.com", "User Two", "SecurePass123!", "1995-05-15")
+    #     # Sign up & log in
+    #     self.sign_up_user("testuser", "test@example.com", "Test User", "SecurePass123!", "2000-01-01")
+    #     self.login_user("testuser", "SecurePass123!")
 
-    #     # Log in as the first user
-    #     self.login_user("testuser1", "SecurePass123!")
+    #     # Navigate to Profile tab
+    #     self.click_button('//a[contains(text(),"Profile")]')
 
-    #     # Navigate to Users tab
-    #     self.click_tab("Users")
+    #     # Edit profile details
+    #     self.fill_input_by_xpath("Name:", "Updated User")
+    #     self.fill_input_by_xpath("Email:", "updated@example.com")
+    #     self.fill_input_by_xpath("Date of Birth:", "12-12-1990")
+    #     # self.fill_input_by_xpath("Hobbies (comma-separated):", "Reading, Hiking")
 
-    #     # Filter users by age
-    #     self.fill_input_by_xpath("Min Age:", "20")
-    #     self.fill_input_by_xpath("Max Age:", "30")
-    #     self.click_button("//button[contains(text(),'Apply Filter')]")
+    #     # Save changes
+    #     self.click_button("//button[contains(text(),'Save')]")
 
-    #     # Verify results are filtered
-    #     self.assertNotIn("Server Error", self.driver.page_source)
+    #     # Verify success alert
+    #     alert_text = self.driver.switch_to.alert
+    #     self.assertIn("Profile updated successfully!", alert_text.text)
+    #     alert_text.accept()
+
+    def test_3_users_page_filter(self):
+        """
+        Test filtering users by age.
+        """
+        # Create two users
+        self.sign_up_user("testuser1", "user1@example.com", "User One", "SecurePass123!", "10-10-2000")
+        self.sign_up_user("testuser2", "user2@example.com", "User Two", "SecurePass123!", "15-11-1996")
+
+        # Log in as the first user
+        self.login_user("testuser1", "SecurePass123!")
+
+        # Navigate to Users tab
+        self.click_button('//a[contains(text(),"Users")]')
+
+        # Filter users by age
+        self.fill_input_by_xpath("Min Age:", "20")
+        self.fill_input_by_xpath("Max Age:", "30")
+        self.click_button("//button[contains(text(),'Apply Filter')]")
+
+        # Verify results are filtered
+        self.assertNotIn("Server Error", self.driver.page_source)
 
     # def test_4_send_and_accept_friend_request(self):
     #     """
