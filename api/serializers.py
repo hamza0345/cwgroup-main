@@ -3,7 +3,6 @@
 from rest_framework import serializers
 from .models import CustomUser, Hobby, FriendRequest
 
-
 class HobbySerializer(serializers.ModelSerializer):
     class Meta:
         model = Hobby
@@ -14,7 +13,11 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Serialises our CustomUser, including date_of_birth and hobbies.
     """
-    hobbies = HobbySerializer(many=True, read_only=True)
+    hobbies = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='name'
+    )
 
     class Meta:
         model = CustomUser
@@ -29,6 +32,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
+    """
+    Handles updating user data, including hobbies by name.
+    """
     hobbies = serializers.ListField(
         child=serializers.CharField(), required=False
     )
@@ -48,10 +54,9 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-
 class FriendRequestSerializer(serializers.ModelSerializer):
-    from_user = UserSerializer(read_only=True)
-    to_user = UserSerializer(read_only=True)
+    from_user = serializers.SlugRelatedField(slug_field='username', read_only=True)
+    to_user = serializers.SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
         model = FriendRequest

@@ -11,13 +11,16 @@ class Hobby(models.Model):
     def __str__(self) -> str:
         return self.name
 
+
 class CustomUser(AbstractUser):
     """
     Our custom User model. Must match the 'api.CustomUser' reference in settings.py.
     """
     name = models.CharField(max_length=150, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
+    # Each user can have multiple hobbies, and each hobby can belong to multiple users
     hobbies = models.ManyToManyField(Hobby, blank=True, related_name='users_with_this_hobby')
+
 
 class FriendRequest(models.Model):
     """
@@ -38,6 +41,7 @@ class FriendRequest(models.Model):
     def __str__(self) -> str:
         status = "Accepted" if self.accepted else "Pending"
         return f"FriendRequest from {self.from_user.username} to {self.to_user.username} ({status})"
+
 
 class PageView(models.Model):
     """

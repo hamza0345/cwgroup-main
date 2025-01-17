@@ -122,5 +122,6 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  background-color: #4CAF50;
 }
 </style>

@@ -7,14 +7,18 @@
         id="newHobby"
         type="text"
         v-model="newHobby"
-        @keyup.enter="addHobby"
+        @keyup.enter="createHobby"
       />
-      <button @click="addHobby">Add Hobby</button>
+      <button @click="createHobby">Add Hobby</button>
     </div>
 
     <ul>
       <li v-for="hob in hobbyStore.hobbies" :key="hob.id">
         {{ hob.name }}
+        <!-- Button to add the hobby to the user's own hobbies -->
+        <button @click="addHobbyToUser(hob.name)" style="margin-left:10px;">
+          Add to My Hobbies
+        </button>
       </li>
     </ul>
   </div>
@@ -23,11 +27,13 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
 import { useHobbyStore } from '../stores/hobbyStore';
+import { useUserStore } from '../stores/userStore';
 
 export default defineComponent({
   name: 'HobbiesPage',
   setup() {
     const hobbyStore = useHobbyStore();
+    const userStore = useUserStore();
     const newHobby = ref('');
 
     const fetchHobbies = async () => {
@@ -38,7 +44,7 @@ export default defineComponent({
       }
     };
 
-    const addHobby = async () => {
+    const createHobby = async () => {
       const trimmed = newHobby.value.trim();
       if (!trimmed) return;
       try {
@@ -49,14 +55,31 @@ export default defineComponent({
       }
     };
 
+    const addHobbyToUser = async (hobbyName: string) => {
+      if (!userStore.currentUser) {
+        alert('You need to be logged in to add hobbies to your profile.');
+        return;
+      }
+      try {
+        // We'll call a new function in the user store that updates user hobbies
+        await userStore.addHobbyToCurrentUser(hobbyName);
+        alert(`"${hobbyName}" added to your profile!`);
+      } catch (error) {
+        console.error(error);
+        alert('Failed to add hobby to user.');
+      }
+    };
+
     onMounted(() => {
       fetchHobbies();
     });
 
     return {
       hobbyStore,
+      userStore,
       newHobby,
-      addHobby,
+      createHobby,
+      addHobbyToUser,
     };
   },
 });
@@ -65,5 +88,20 @@ export default defineComponent({
 <style scoped>
 h2 {
   margin-bottom: 1rem;
+}
+ul {
+  list-style: none;
+  padding: 0;
+}
+li {
+  margin: 0.5rem 0;
+}
+button {
+  cursor: pointer;
+  color: #fff;
+  background: #3f51b5;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
 }
 </style>

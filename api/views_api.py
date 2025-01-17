@@ -1,7 +1,7 @@
 from datetime import date, timedelta
-from django.db.models import Count, Q
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from rest_framework import status, generics
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -14,11 +14,12 @@ from .serializers import (
     FriendRequestSerializer
 )
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def current_user_view(request):
     """
-    Returns the currently logged-in user's details.
+    Returns the currently authenticated user's details.
     """
     user = request.user
     serializer = UserSerializer(user)
@@ -29,8 +30,7 @@ def current_user_view(request):
 @permission_classes([IsAuthenticated])
 def hobby_list_create_view(request):
     """
-    GET: Return all hobbies as JSON.
-    POST: Create a new hobby.
+    Handles fetching all hobbies or creating a new one.
     """
     if request.method == 'GET':
         hobbies = Hobby.objects.all()
@@ -53,21 +53,16 @@ def hobby_list_create_view(request):
 @permission_classes([IsAuthenticated])
 def user_list_view(request):
     """
-    Returns a JSON list of other users, sorted by the number of hobbies in common with the current user.
-    Allows age filtering (min_age, max_age).
-    Includes pagination (10 per page).
+    Fetch a paginated list of users, optionally filtered by age range.
     """
-    current_user = request.user
+    today = date.today()
     min_age_str = request.GET.get('min_age')
     max_age_str = request.GET.get('max_age')
-    page_str = request.GET.get('page', '1')
+    page_str = request.GET.get('page', 1)
 
-    users_qs = CustomUser.objects.exclude(pk=current_user.pk).annotate(
-        common_hobbies_count=Count('hobbies', filter=Q(hobbies__in=current_user.hobbies.all()))
-    ).order_by('-common_hobbies_count')
+    users_qs = CustomUser.objects.exclude(pk=request.user.pk)
 
-    today = date.today()
-    # Filter by min_age
+    # Filter by minimum age
     if min_age_str:
         try:
             min_age = int(min_age_str)
@@ -76,7 +71,7 @@ def user_list_view(request):
         except ValueError:
             pass
 
-    # Filter by max_age
+    # Filter by maximum age
     if max_age_str:
         try:
             max_age = int(max_age_str)
@@ -85,10 +80,16 @@ def user_list_view(request):
         except ValueError:
             pass
 
-    # Pagination
+    # Order by similarity of hobbies (i.e., count how many hobbies in common)
+    # If you want them listed by most similar first, you might do something
+    # fancy with annotations. For now, it’s omitted unless needed.
+
     from django.core.paginator import Paginator
-    paginator = Paginator(users_qs, 10)
-    page_obj = paginator.get_page(page_str)
+    paginator = Paginator(users_qs, 10)  # Show 10 users per page
+    try:
+        page_obj = paginator.get_page(page_str)
+    except ValueError:
+        return Response({'error': 'Invalid page number'}, status=status.HTTP_400_BAD_REQUEST)
 
     serializer = UserSerializer(page_obj, many=True)
 
@@ -103,18 +104,20 @@ def user_list_view(request):
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def user_detail_view(request, user_id: int):
+    """
+    Fetch or update a specific user's details.
+    """
     user_obj = get_object_or_404(CustomUser, pk=user_id)
-    # If the user is trying to update someone else’s profile, forbid it:
-    if request.method == 'PUT' and request.user.id != user_obj.id:
-        return Response({'error': 'You cannot edit another user’s profile.'},
-                        status=status.HTTP_403_FORBIDDEN)
 
     if request.method == 'GET':
         serializer = UserSerializer(user_obj)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        # Use a separate serializer for updates
+        if request.user.id != user_obj.id:
+            return Response({'error': 'You cannot edit another user’s profile.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
         serializer = UserUpdateSerializer(user_obj, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -122,16 +125,32 @@ def user_detail_view(request, user_id: int):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST', 'PUT'])
+@api_view(['GET', 'POST', 'PUT'])
 @permission_classes([IsAuthenticated])
 def friend_request_view(request):
     """
-    POST: Creates a new friend request (from current user to 'to_user_id').
-    PUT: Accepts a friend request if current user is the recipient (action='accept').
+    Handle friend requests.
+    - GET: Return friend requests relevant to current user (pending or all).
+    - POST: Send a friend request.
+    - PUT: Accept a friend request.
     """
-    if request.method == 'POST':
+    if request.method == 'GET':
+        # Return friend requests where the current user is the "to_user"
+        # and they have not yet accepted (pending).
+        # You can modify the query to return all or only pending requests.
+        pending_requests = FriendRequest.objects.filter(
+            to_user=request.user,
+            accepted=False
+        )
+        serializer = FriendRequestSerializer(pending_requests, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
         to_user_id = request.data.get('to_user_id')
         from_user = request.user
+
+        if not to_user_id:
+            return Response({'error': 'No recipient provided'}, status=status.HTTP_400_BAD_REQUEST)
 
         if from_user.pk == to_user_id:
             return Response({'error': 'Cannot send friend request to yourself'}, status=status.HTTP_400_BAD_REQUEST)
@@ -146,7 +165,11 @@ def friend_request_view(request):
         friend_request_id = request.data.get('friend_request_id')
         action = request.data.get('action')
 
+        if not friend_request_id or not action:
+            return Response({'error': 'Missing friend request ID or action'}, status=status.HTTP_400_BAD_REQUEST)
+
         fr_obj = get_object_or_404(FriendRequest, pk=friend_request_id)
+
         if fr_obj.to_user != request.user:
             return Response({'error': 'Not authorised'}, status=status.HTTP_403_FORBIDDEN)
 
