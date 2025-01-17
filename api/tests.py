@@ -80,7 +80,7 @@ class TestE2E(StaticLiveServerTestCase):
         self.fill_input("id_password", password)
         self.click_button("//button[contains(text(),'Login')]")
 
-    # Tests
+    #Tests
     def test_1_signup_and_login(self):
         """
         Test account creation and login.
