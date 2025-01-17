@@ -9,7 +9,7 @@ export const useUserStore = defineStore('userStore', () => {
   const hasNext = ref<boolean>(false);
   const totalPages = ref<number>(1);
 
-  // stores pending friend requests for the useer
+  // stores pending friend requests for the user
   const pendingFriendRequests = ref<any[]>([]);
 
   // list of friends 
@@ -66,33 +66,56 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  async function updateProfile(userId: number, newUserData: Partial<IUserUpdate>): Promise<any> {
+
+
+    async function updateProfile(userId: number, newUserData: Partial<IUserUpdate>) {
     try {
+      const csrfToken = getCsrfToken(); // Ensure you have a CSRF token
       const response = await fetch(`/api/users/${userId}/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': getCsrfToken(),
+          'X-CSRFToken': csrfToken,
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // Pass the token
         },
         body: JSON.stringify(newUserData),
       });
+  
       if (!response.ok) {
-        console.error('Profile update failed');
-        throw new Error(await response.text());
+        throw new Error(`Failed to update profile: ${response.statusText}`);
       }
-      const result = await response.json();
-      // refetch the user data 
-      await fetchMe(userId);
-      return result;
+  
+      const updatedUser = await response.json();
+      // Assuming you have a users array and a method to update the user in the store
+      const userIndex = users.value.findIndex(user => user.id === userId);
+      if (userIndex !== -1) {
+        users.value[userIndex] = updatedUser;
+      }
     } catch (error) {
       console.error('Error in updateProfile:', error);
+    }
+  }
+
+  async function reauthenticate(username: string, password: string) {
+    try {
+      const response = await fetch('/login/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to re-authenticate after password change.');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('token', data.token); // Save the new token
+    } catch (error) {
+      console.error('Error during re-authentication:', error);
       throw error;
     }
   }
 
-  /**
-   * Add a  hobby to the user current hobby list.
-   */
   async function addHobbyToCurrentUser(hobbyName: string): Promise<void> {
     if (!currentUser.value) return;
     // Re-fetch the user to get their latest hobbies
@@ -128,9 +151,6 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  /**
-   * fetch requests where the current user is the 'to_user' and accepted=false (
-   */
   async function fetchFriendRequests(): Promise<void> {
     try {
       const response = await fetch('/api/friend-requests/', {
@@ -170,7 +190,6 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  
   async function fetchFriends(): Promise<void> {
     if (!currentUser.value) return;
     try {
@@ -187,6 +206,7 @@ export const useUserStore = defineStore('userStore', () => {
       console.error('Error fetching friends:', error);
     }
   }
+
 
   return {
     currentUser,

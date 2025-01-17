@@ -159,6 +159,7 @@ def user_detail_view(request, user_id: int):
     if request.method == 'PUT' and request.user.id != user_obj.id:
         return Response({'error': 'You cannot edit another user’s profile.'},
                         status=status.HTTP_403_FORBIDDEN)
+        
 
     if request.method == 'GET':
         serializer = UserSerializer(user_obj)
@@ -168,7 +169,21 @@ def user_detail_view(request, user_id: int):
         serializer = UserUpdateSerializer(user_obj, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({'message': 'User updated successfully'})
+            # Authenticate and login the user with the new details
+            print("line 173")
+            print(request.data.get('password'))
+            user = authenticate(
+                request,
+                username=serializer.validated_data.get('username', user_obj.username),
+                password=request.data.get('password')
+                
+            )
+            if user:
+                login(request, user)
+                # Return profile details
+                updated_user_serializer = UserSerializer(user)
+                return Response({'message': 'User updated and logged in', 'user': updated_user_serializer.data}, status=status.HTTP_200_OK)
+            return Response({'message': 'User updated, but login failed'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST', 'PUT'])

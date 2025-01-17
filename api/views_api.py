@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -127,6 +128,11 @@ def user_detail_view(request, user_id: int):
     user_obj = get_object_or_404(CustomUser, pk=user_id)
 
     if request.method == 'GET':
+        if request.user.id != user_obj.id:
+            return HttpResponse(
+                # {'error': 'You cannot view another user’s profile.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
         serializer = UserSerializer(user_obj)
         return Response(serializer.data)
 
@@ -141,7 +147,7 @@ def user_detail_view(request, user_id: int):
         if serializer.is_valid():
             serializer.save()
             return Response({'message': 'User updated successfully'})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'POST', 'PUT'])
