@@ -86,7 +86,7 @@ def user_list_view(request):
         try:
             max_age = int(max_age_str)
             max_birth_date = today - timedelta(days=max_age * 365)
-            users_qs = users_qs.filter(date_of_birth__gte(max_birth_date))
+            users_qs = users_qs.filter(date_of_birth__gte=max_birth_date)
         except ValueError:
             pass
 
@@ -195,23 +195,3 @@ def friend_request_view(request):
             fr_obj.save()
             return Response({'message': 'Friend request accepted'})
         return Response({'error': 'Invalid action'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['PUT'])
-@permission_classes([IsAuthenticated])
-def update_profile_view(request, user_id):
-    user_obj = get_object_or_404(CustomUser, pk=user_id)
-
-    if request.user.id != user_obj.id:
-        return Response(
-            {'error': 'You cannot edit another user’s profile.'},
-            status=status.HTTP_403_FORBIDDEN
-        )
-
-    serializer = UserUpdateSerializer(user_obj, data=request.data, partial=True)
-    if serializer.is_valid():
-        if 'password' in request.data:
-            user_obj.set_password(request.data['password'])
-        serializer.save()
-        return Response({'message': 'User updated successfully'})
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
