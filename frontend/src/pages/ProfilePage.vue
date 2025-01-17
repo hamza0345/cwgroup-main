@@ -135,13 +135,13 @@ input {
   margin-top: 5px;
   margin-bottom: 15px;
   font-size: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid ;
   border-radius: 4px;
 }
 button {
   padding: 10px 15px;
   font-size: 1rem;
-  color: white;
+
   border: none;
   border-radius: 4px;
   cursor: pointer;

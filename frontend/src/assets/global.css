@@ -2,20 +2,27 @@
 
 :root{
     --primary-color: #ae8ffc;
+    --dark: #ffffff;
+    --light: #272727;
+}
+
+*{
+    border-color: var(--dark);
 }
 
 body {
     font-family: "Montserrat", serif;
     margin: 1px;
     padding: 0;
-    background-color: #f9f9f9;
+    background-color: var(--light);
+    color: var(--dark);
 }
 
 /* Headings */
 h1, h2 {
     text-align: center;
     margin-bottom: 20px;
-    color: #333;
+    color: var(--dark);
 }
 
 /* Forms */
@@ -23,7 +30,7 @@ form {
     max-width: 400px;
     margin: 20px auto;
     padding: 20px;
-    background: white;
+    background: var(--light);
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -38,7 +45,7 @@ form input, form select, form textarea {
     width: 100%;
     padding: 8px;
     margin: 10px 0 20px;
-    border: 1px solid #ddd;
+    border: 1px solid;
     border-radius: 4px;
     font-size: 14px;
 }
@@ -48,7 +55,7 @@ button {
     width: 100%;
     padding: 10px;
     background-color: var(--primary-color);
-    color: white;
+    color: var(--light);
     border: none;
     border-radius: 4px;
     font-size: 16px;
@@ -86,7 +93,7 @@ p a:hover {
     padding: 20px;
     margin: 0 auto;
     max-width: 800px;
-    background: white;
+    background: var(--light);
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

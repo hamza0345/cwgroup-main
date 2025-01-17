@@ -97,7 +97,7 @@ li {
 }
 button {
   cursor: pointer;
-  color: #fff;
+
   border: none;
   padding: 4px 8px;
   border-radius: 4px;
