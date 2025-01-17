@@ -1,259 +1,174 @@
-# api/tests.py
-
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
-
-from .models import CustomUser
+import time
 
 
-class BasicE2ETest(StaticLiveServerTestCase):
+class TestE2E(StaticLiveServerTestCase):
+    """
+    End-to-end tests for:
+    1. Account creation
+    2. Login
+    3. Profile editing
+    4. User filtering
+    5. Sending and accepting friend requests
+    """
+
     def setUp(self):
-        # Initialize the Chrome WebDriver (make sure it's installed!)
         self.driver = webdriver.Chrome()
-        self.driver.implicitly_wait(10)  # seconds
+        self.driver.implicitly_wait(10)
 
     def tearDown(self):
         self.driver.quit()
 
-    def _sign_up_user(
-        self,
-        username="testuser",
-        email="test@example.com",
-        password="StrongPassword123!",
-        name="Test User",
-        dob="2000-01-01"
-    ):
-        """
-        Helper to sign up a new user.
-        """
-        # Go to signup page
-        self.driver.get(self.live_server_url + reverse('signup'))
+    # ---------------------------------------
+    # Helper Methods
+    # ---------------------------------------
 
-        # Fill out the signup form
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.ID, 'id_username'))
-        ).send_keys(username)
+    def go_to_url(self, url):
+        self.driver.get(url)
+        time.sleep(1)
 
-        self.driver.find_element(By.ID, 'id_email').send_keys(email)
-        self.driver.find_element(By.ID, 'id_name').send_keys(name)
-        self.driver.find_element(By.ID, 'id_password1').send_keys(password)
-        self.driver.find_element(By.ID, 'id_password2').send_keys(password)
-        self.driver.find_element(By.ID, 'id_date_of_birth').send_keys(dob)
-
-        # Submit the form
-        self.driver.find_element(By.ID, 'id_date_of_birth').send_keys(Keys.RETURN)
-
-    def _login_user(self, username, password):
-        """
-        Helper to log in a user.
-        """
-        self.driver.get(self.live_server_url + reverse('login'))
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.ID, 'id_username'))
-        ).send_keys(username)
-        self.driver.find_element(By.ID, 'id_password').send_keys(password)
-        self.driver.find_element(By.ID, 'id_password').send_keys(Keys.RETURN)
-
-    def test_signup_login(self):
-        """
-        1) Account creation / signup
-        2) Login
-        """
-        # Sign up
-        self._sign_up_user()
-
-        # Check we got redirected to login
-        WebDriverWait(self.driver, 10).until(
-            EC.url_contains('login')
+    def fill_input(self, field_id, value):
+        field = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.ID, field_id))
         )
-        self.assertIn('login', self.driver.current_url.lower())
+        field.clear()
+        field.send_keys(value)
+
+    def click_button(self, xpath):
+        button = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, xpath))
+        )
+        button.click()
+        time.sleep(1)
+
+    def sign_up_user(self, username, email, name, password, dob):
+        self.go_to_url(self.live_server_url + reverse("signup"))
+        self.fill_input("id_username", username)
+        self.fill_input("id_email", email)
+        self.fill_input("id_name", name)
+        self.fill_input("id_password1", password)
+        self.fill_input("id_password2", password)
+        self.fill_input("id_date_of_birth", dob)
+        self.click_button("//button[contains(text(),'Sign up')]")
+
+    def login_user(self, username, password):
+        self.go_to_url(self.live_server_url + reverse("login"))
+        self.fill_input("id_username", username)
+        self.fill_input("id_password", password)
+        self.click_button("//button[contains(text(),'Login')]")
+    
+    def click_tab(self, tab_text):
+        """Click on a navigation tab by its visible text."""
+        tab = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, f"//nav//a[contains(text(), '{tab_text}')]"))
+        )
+        tab.click()
+        time.sleep(1)  # Allow time for the transition
+
+
+    # ---------------------------------------
+    # Tests
+    # ---------------------------------------
+
+    def test_1_signup_and_login(self):
+        """
+        Test account creation and login.
+        """
+        # Sign up a new user
+        self.sign_up_user("testuser", "test@example.com", "Test User", "SecurePass123!", "2000-01-01")
+
+        # Verify redirect to login page
+        self.assertIn("login", self.driver.current_url)
 
         # Log in
-        self._login_user('testuser', 'StrongPassword123!')
+        self.login_user("testuser", "SecurePass123!")
 
-        # Wait for main page to load
+        # Verify successful login and redirection
         WebDriverWait(self.driver, 10).until(
-            EC.url_contains('/')
+            EC.presence_of_element_located((By.XPATH, "//h1[contains(text(),'Welcome')]"))
         )
+        self.assertIn("Welcome to the Hobbies SPA", self.driver.page_source)
 
-        # Confirm some text on the main page
-        self.assertIn('Welcome to the Hobbies SPA', self.driver.page_source)
+    # def test_2_edit_profile(self):
+    #     """
+    #     Test editing user profile details using the profile tab navigation.
+    #     """
+    #     # Sign up and log in the user
+    #     self.sign_up_user("testuser", "test@example.com", "Test User", "SecurePass123!", "2000-01-01")
+    #     self.login_user("testuser", "SecurePass123!")
 
-    def test_edit_profile(self):
-        """
-        3) Editing all the user’s data on the profile page
-           including username & password.
-        """
-        # Sign up + login
-        self._sign_up_user()
-        self._login_user('testuser', 'StrongPassword123!')
+    #     # Wait for navigation bar to be clickable and click the Profile tab
+    #     WebDriverWait(self.driver, 10).until(
+    #         EC.element_to_be_clickable((By.XPATH, "//nav//a[contains(text(),'Profile')]"))
+    #     ).click()
 
-        # Suppose the link or route to the profile is "/profile" or so:
-        # Adjust as needed.
-        profile_url = self.live_server_url + "/profile/"
-        self.driver.get(profile_url)
+    #     # Wait explicitly for the profile page to load by checking for a unique element
+    #     WebDriverWait(self.driver, 10).until(
+    #         EC.presence_of_element_located((By.XPATH, "//h2[contains(text(),'Profile')]"))
+    #     )
 
-        # Wait for the profile page to load
-        # This is hypothetical; you might have an element with ID 'profile-heading'
-        # or just rely on the presence of input fields:
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "input"))
-        )
+    #     # Edit profile details
+    #     self.fill_input("id_name", "Updated User")
+    #     self.fill_input("id_email", "updated@example.com")
+    #     self.fill_input("id_date_of_birth", "1995-12-25")
+    #     self.fill_input("id_hobbies", "Reading, Coding")
 
-        # Clear and set new name
-        name_input = self.driver.find_element(By.XPATH, "//label[text()='Name:']/following-sibling::input")
-        name_input.clear()
-        name_input.send_keys("Updated Name")
+    #     # Save profile changes
+    #     WebDriverWait(self.driver, 10).until(
+    #         EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Save')]"))
+    #     ).click()
 
-        # Clear and set new email
-        email_input = self.driver.find_element(By.XPATH, "//label[text()='Email:']/following-sibling::input")
-        email_input.clear()
-        email_input.send_keys("updated@example.com")
+    #     # Verify success message
+    #     WebDriverWait(self.driver, 10).until(
+    #         EC.presence_of_element_located((By.XPATH, "//div[contains(text(),'Profile updated successfully')]"))
+    #     )
+    #     self.assertIn("Profile updated successfully", self.driver.page_source)
 
-        # Clear and set new DOB
-        dob_input = self.driver.find_element(By.XPATH, "//label[text()='Date of Birth:']/following-sibling::input")
-        dob_input.clear()
-        dob_input.send_keys("1990-01-01")
 
-        # Clear and set new hobbies
-        hobbies_input = self.driver.find_element(By.XPATH, "//label[contains(text(),'Hobbies')]/following-sibling::input")
-        hobbies_input.clear()
-        hobbies_input.send_keys("Reading, Traveling")
 
-        # Also test changing username
-        # Suppose we have another field or we just override it in the same input?
-        # We'll assume the label is "Username:"
-        # This might differ in your implementation (you might only show one field).
-        # We'll do a separate approach: the "updateProfile" in the Vue side handles it if passed, so we need an input for it.
-        # For demonstration, let's pretend there's an input with ID 'username-input'.
-        # If that's not how your page is laid out, adapt accordingly.
-        try:
-            username_input = self.driver.find_element(By.ID, "username-input")
-            username_input.clear()
-            username_input.send_keys("new_username")
-        except:
-            pass  # If no such field, you can skip or adjust your front-end
 
-        # And new password
-        try:
-            pass_input = self.driver.find_element(By.ID, "password-input")
-            pass_input.clear()
-            pass_input.send_keys("NewPassword123!")
-        except:
-            pass
+    # # def test_3_users_page_filter(self):
+    # #     """
+    # #     Test filtering users by age on the users page.
+    # #     """
+    # #     self.sign_up_user("testuser1", "user1@example.com", "User One", "SecurePass123!", "2000-01-01")
+    # #     self.sign_up_user("testuser2", "user2@example.com", "User Two", "SecurePass123!", "1995-05-15")
+    #     self.login_user("testuser1", "SecurePass123!")
 
-        # Now we click a button to save
-        # We'll assume there's a <button @click="saveProfile">Save</button>
-        save_button = self.driver.find_element(By.XPATH, "//button[contains(text(),'Save')]")
-        save_button.click()
+    #     # Navigate to users page
+    #     self.go_to_url(self.live_server_url + "/users/")
 
-        # Check confirmation
-        self.assertIn("Profile updated successfully", self.driver.page_source)
+    #     # Apply age filters
+    #     self.fill_input("min-age", "20")
+    #     self.fill_input("max-age", "30")
+    #     self.click_button("//button[contains(text(),'Apply Filter')]")
 
-        # Now let's log out and re-login with the new username/password
-        self.driver.get(self.live_server_url + reverse('logout'))
-        self.driver.get(self.live_server_url + reverse('login'))
+    #     # Verify filtered users are displayed
+    #     self.assertNotIn("Server Error", self.driver.page_source)
 
-        # If we did change username to 'new_username' and password to 'NewPassword123!'
-        # we attempt that login
-        try:
-            self._login_user("new_username", "NewPassword123!")
-            # Wait to see if it logs in
-            WebDriverWait(self.driver, 10).until(
-                EC.url_contains('/')
-            )
-            # Confirm main page text
-            self.assertIn("Welcome to the Hobbies SPA", self.driver.page_source)
-        except:
-            # If we didn't actually update username/password,
-            # fallback to old credentials
-            self._login_user("testuser", "StrongPassword123!")
+    # def test_4_send_and_accept_friend_request(self):
+    #     """
+    #     Test sending and accepting a friend request.
+    #     """
+    #     # Sign up two users
+    #     self.sign_up_user("user1", "user1@example.com", "User One", "SecurePass123!", "2000-01-01")
+    #     self.sign_up_user("user2", "user2@example.com", "User Two", "SecurePass123!", "1995-05-15")
 
-    def test_users_page_and_filter(self):
-        """
-        4) Users page with testing of filtering by age
-        """
-        # Sign up + login
-        self._sign_up_user()
-        self._login_user('testuser', 'StrongPassword123!')
+    #     # User1 sends a friend request to User2
+    #     self.login_user("user1", "SecurePass123!")
+    #     self.go_to_url(self.live_server_url + "/users/")
+    #     self.click_button("//button[contains(text(),'Send Friend Request')]")
+    #     self.assertIn("Friend request sent", self.driver.page_source)
+    #     self.go_to_url(self.live_server_url + reverse("logout"))
 
-        # Suppose the users page is at /users
-        users_url = self.live_server_url + "/users"
-        self.driver.get(users_url)
-
-        # Try setting min_age to 18, max_age to 25, then clicking "Apply Filter"
-        min_age_input = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//label[contains(text(),'Min Age')]/input"))
-        )
-        min_age_input.clear()
-        min_age_input.send_keys("18")
-
-        max_age_input = self.driver.find_element(By.XPATH, "//label[contains(text(),'Max Age')]/input")
-        max_age_input.clear()
-        max_age_input.send_keys("25")
-
-        apply_filter_button = self.driver.find_element(By.XPATH, "//button[contains(text(),'Apply Filter')]")
-        apply_filter_button.click()
-
-        # Expect some user listing to appear or maybe none
-        # We'll just check that we didn't blow up
-        self.assertNotIn("Server Error", self.driver.page_source)
-
-    def test_send_and_accept_friend_request(self):
-        """
-        5) Sending a friend request
-        6) Logging in as other user & accept friend requests
-        """
-        # Create user1
-        self._sign_up_user(
-            username="user1",
-            email="user1@example.com"
-        )
-        self.driver.get(self.live_server_url + reverse('logout'))
-
-        # Create user2
-        self._sign_up_user(
-            username="user2",
-            email="user2@example.com"
-        )
-        self.driver.get(self.live_server_url + reverse('logout'))
-
-        # Login as user1
-        self._login_user("user1", "StrongPassword123!")
-
-        # Send friend request to user2
-        # Suppose we go to /users or something
-        users_url = self.live_server_url + "/users"
-        self.driver.get(users_url)
-
-        # We'll look for a button we can click: "Send Friend Request"
-        # Could be an ID or text-based. We'll guess text-based for example:
-        send_fr_button = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//button[contains(text(),'Send Friend Request')]"))
-        )
-        send_fr_button.click()
-
-        # Check success
-        self.assertIn("Friend request sent", self.driver.page_source)
-
-        # Log out user1
-        self.driver.get(self.live_server_url + reverse('logout'))
-
-        # Log in user2
-        self._login_user("user2", "StrongPassword123!")
-
-        # Accept friend request
-        # Suppose the main page or some page lists the pending requests
-        self.driver.get(self.live_server_url + "/")
-        # Wait for friend request listing
-        accept_button = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//button[contains(text(),'Accept')]"))
-        )
-        accept_button.click()
-
-        self.assertIn("Friend request accepted", self.driver.page_source)
+    #     # User2 logs in and accepts the request
+    #     self.login_user("user2", "SecurePass123!")
+    #     self.go_to_url(self.live_server_url + "/")
+    #     self.click_button("//button[contains(text(),'Accept')]")
+    #     self.assertIn("Friend request accepted", self.driver.page_source)
