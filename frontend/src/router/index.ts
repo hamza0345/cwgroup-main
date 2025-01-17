@@ -21,7 +21,7 @@ const router = createRouter({
   routes,
 });
 
-// Example navigation guard if you want to ensure user is fetched:
+
 router.beforeEach(async () => {
   const userStore = useUserStore();
   if (!userStore.currentUser) {

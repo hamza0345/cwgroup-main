@@ -8,8 +8,8 @@ from typing import List
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'YOUR-SECRET-KEY'  # Replace with a secure key
-DEBUG = True  # Set to False in production
+SECRET_KEY = 'YOUR-SECRET-KEY'  
+DEBUG = True  
 
 ALLOWED_HOSTS: List[str] = [
     '127.0.0.1',

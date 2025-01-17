@@ -21,7 +21,7 @@
         </label>
       </div>
 
-      <!-- OPTIONAL: Fields for changing username and password -->
+      
       <div>
         <label>
           Username:

@@ -1,4 +1,4 @@
-// Function to extract a specific cookie value by name
+// basically gets the csrf fom the cookies then returns it
 export function getCookie(name: string): string {
   const matches = document.cookie.match(
     new RegExp(
@@ -8,7 +8,7 @@ export function getCookie(name: string): string {
   return matches ? decodeURIComponent(matches[1]) : '';
 }
 
-// Function to get the CSRF token from cookies
+//  get the CSRF token from cookies
 export function getCsrfToken(): string {
   return getCookie('csrftoken');
 }

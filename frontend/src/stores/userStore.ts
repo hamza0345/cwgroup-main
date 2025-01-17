@@ -9,10 +9,10 @@ export const useUserStore = defineStore('userStore', () => {
   const hasNext = ref<boolean>(false);
   const totalPages = ref<number>(1);
 
-  // We'll store pending friend requests for the current user
+  // stores pending friend requests for the useer
   const pendingFriendRequests = ref<any[]>([]);
 
-  // We'll store the list of friends for the current user
+  // list of friends 
   const friendsList = ref<IUser[]>([]);
 
   async function fetchMe(userId: number): Promise<void> {
@@ -81,7 +81,7 @@ export const useUserStore = defineStore('userStore', () => {
         throw new Error(await response.text());
       }
       const result = await response.json();
-      // After updating, refetch the user data so our store is up-to-date
+      // refetch the user data 
       await fetchMe(userId);
       return result;
     } catch (error) {
@@ -91,7 +91,7 @@ export const useUserStore = defineStore('userStore', () => {
   }
 
   /**
-   * Add a single hobby to the user's current hobby list.
+   * Add a  hobby to the user current hobby list.
    */
   async function addHobbyToCurrentUser(hobbyName: string): Promise<void> {
     if (!currentUser.value) return;
@@ -129,7 +129,7 @@ export const useUserStore = defineStore('userStore', () => {
   }
 
   /**
-   * Fetch friend requests where the current user is the 'to_user' and accepted=false (pending).
+   * fetch requests where the current user is the 'to_user' and accepted=false (
    */
   async function fetchFriendRequests(): Promise<void> {
     try {
@@ -170,10 +170,7 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  /**
-   * Fetch the list of friends for the current user from
-   * /api/users/current/friends/
-   */
+  
   async function fetchFriends(): Promise<void> {
     if (!currentUser.value) return;
     try {

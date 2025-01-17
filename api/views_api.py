@@ -90,8 +90,7 @@ def user_list_view(request):
         except ValueError:
             pass
 
-    # Annotate the queryset with the number of common hobbies
-    # between each user and the currently logged-in user
+   
     user_hobbies = request.user.hobbies.all()
     users_qs = users_qs.annotate(
         common_hobbies_count=Count(
