@@ -89,25 +89,25 @@ class TestE2E(StaticLiveServerTestCase):
         self.fill_input("id_password", password)
         self.click_button("//button[contains(text(),'Login')]")
 
-    #Tests
-    # def test_1_signup_and_login(self):
-    #     """
-    #     Test account creation and login.
-    #     """
-    #     # Signs up a new user
-    #     self.sign_up_user("testuser", "test@example.com", "Test User", "SecurePass123!", "2000-01-01")
+    # Tests
+    def test_1_signup_and_login(self):
+        """
+        Test account creation and login.
+        """
+        # Signs up a new user
+        self.sign_up_user("testuser", "test@example.com", "Test User", "SecurePass123!", "2000-01-01")
 
-    #     # Verify redirect to login page
-    #     self.assertIn("login", self.driver.current_url)
+        # Verify redirect to login page
+        self.assertIn("login", self.driver.current_url)
 
-    #     # Log in
-    #     self.login_user("testuser", "SecurePass123!")
+        # Log in
+        self.login_user("testuser", "SecurePass123!")
 
-    #     # Verify successful login by looking for the welcome message
-    #     WebDriverWait(self.driver, 10).until(
-    #         EC.presence_of_element_located((By.XPATH, "//h1[contains(text(),'Welcome')]"))
-    #     )
-    #     self.assertIn("Welcome to the Hobbies SPA", self.driver.page_source)
+        # Verify successful login by looking for the welcome message
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//h1[contains(text(),'Welcome')]"))
+        )
+        self.assertIn("Welcome to the Hobbies SPA", self.driver.page_source)
 
     def test_2_edit_profile(self):
         """
@@ -136,6 +136,7 @@ class TestE2E(StaticLiveServerTestCase):
         self.fill_input_by_xpath("Email:", "updated@example.com")
         self.fill_input_by_xpath("Date of Birth:", "12-12-1990")
         self.fill_input_by_xpath("Hobbies (comma-separated):", "Reading, Hiking")
+        self.fill_input_by_xpath("Password:", "SecurePass321")
 
         # Save changes
         self.click_button("//button[contains(text(),'Save')]")
@@ -167,30 +168,30 @@ class TestE2E(StaticLiveServerTestCase):
         # Verify results are filtered
         self.assertNotIn("Server Error", self.driver.page_source)
 
-    # def test_4_send_and_accept_friend_request(self):
-    #     """
-    #     Test sending and accepting a friend request.
-    #     """
-    #     # Sign up two users
-    #     self.sign_up_user("testuser1", "user1@example.com", "User One", "SecurePass123!", "10-10-2000")
-    #     self.sign_up_user("testuser2", "user2@example.com", "User Two", "SecurePass123!", "15-11-1996")
+    def test_4_send_and_accept_friend_request(self):
+        """
+        Test sending and accepting a friend request.
+        """
+        # Sign up two users
+        self.sign_up_user("testuser1", "user1@example.com", "User One", "SecurePass123!", "10-10-2000")
+        self.sign_up_user("testuser2", "user2@example.com", "User Two", "SecurePass123!", "15-11-1996")
 
-    #     # User1 logs in and sends a friend request
-    #     self.login_user("testuser1", "SecurePass123!")
-    #     self.click_button('//a[contains(text(),"Users")]')
-    #     self.click_button("//button[contains(text(),'Send Friend Request')]")
+        # User1 logs in and sends a friend request
+        self.login_user("testuser1", "SecurePass123!")
+        self.click_button('//a[contains(text(),"Users")]')
+        self.click_button("//button[contains(text(),'Send Friend Request')]")
 
-    #     # Verify request sent alert
-    #     alert_text = self.driver.switch_to.alert
-    #     self.assertIn("Friend request sent!", alert_text.text)
-    #     alert_text.accept()
+        # Verify request sent alert
+        alert_text = self.driver.switch_to.alert
+        self.assertIn("Friend request sent!", alert_text.text)
+        alert_text.accept()
 
-    #     # User2 logs in and accepts the request
-    #     self.login_user("testuser2", "SecurePass123!")
-    #     self.click_button('//a[contains(text(),"Main")]')
-    #     self.click_button("//button[contains(text(),'Accept')]")
+        # User2 logs in and accepts the request
+        self.login_user("testuser2", "SecurePass123!")
+        self.click_button('//a[contains(text(),"Main")]')
+        self.click_button("//button[contains(text(),'Accept')]")
 
-    #     # Verify request accepted alert
-    #     alert_text = self.driver.switch_to.alert
-    #     self.assertIn("Friend request accepted", alert_text.text)
-    #     alert_text.accept()
+        # Verify request accepted alert
+        alert_text = self.driver.switch_to.alert
+        self.assertIn("Friend request accepted", alert_text.text)
+        alert_text.accept()
