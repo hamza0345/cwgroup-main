@@ -20,6 +20,6 @@ export default defineComponent({
 
 <style scoped>
 h2 {
-  color: #555;
+
 }
 </style>

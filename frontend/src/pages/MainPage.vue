@@ -79,13 +79,13 @@ export default defineComponent({
 }
 
 header h1 {
-  color: #333;
+
   font-size: 2rem;
   margin-bottom: 10px;
 }
 
 main p {
-  color: #555;
+
   font-size: 1.2rem;
   line-height: 1.5;
 }
@@ -101,7 +101,7 @@ button {
   padding: 5px 10px;
   border: none;
   border-radius: 3px;
-  color: #fff;
+
   cursor: pointer;
 }
 </style>
