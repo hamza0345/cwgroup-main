@@ -8,12 +8,15 @@ export interface IUser {
   username: string;
   name: string;
   email: string;
-  date_of_birth?: string; // or null
-  hobbies: string[];      // store hobby names
-  common_hobbies?: number; // only used in user list responses
+  date_of_birth?: string;
+  hobbies: string[];
 }
 
 export interface IFriendRequestPayload {
   friend_request_id: number;
   action: string;
+}
+
+export interface IUserUpdate extends IUser {
+  password?: string;
 }

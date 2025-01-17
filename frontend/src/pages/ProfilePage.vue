@@ -73,7 +73,7 @@ export default defineComponent({
           editEmail.value = userStore.currentUser.email;
           editDOB.value = userStore.currentUser.date_of_birth || '';
           editHobbies.value = userStore.currentUser.hobbies.join(', ');
-          editUsername.value = userStore.currentUser.username; // new
+          editUsername.value = userStore.currentUser.username;
         }
       }
     });
@@ -93,7 +93,7 @@ export default defineComponent({
           date_of_birth: editDOB.value || undefined,
           hobbies: hobbiesArray,
           username: editUsername.value || undefined,
-          // password: editPassword.value || undefined,
+          password: editPassword.value || undefined,
         });
         alert('Profile updated successfully!');
       } catch (error) {
@@ -145,6 +145,5 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  background-color: #4CAF50;
 }
 </style>

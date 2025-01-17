@@ -14,10 +14,9 @@
     <ul>
       <li v-for="user in userStore.users" :key="user.id">
         <strong>{{ user.name }}</strong>
-        <!-- Show how many hobbies in common -->
-        <span v-if="user.common_hobbies !== undefined && user.common_hobbies > 0">
-          ({{ user.common_hobbies }} common hobbies)
-        </span>
+        <ul>
+          <li v-for="hobby in user.hobbies" :key="hobby">{{ hobby }}</li>
+        </ul>
         <button @click="sendFriendRequest(user.id)">Send Friend Request</button>
       </li>
     </ul>

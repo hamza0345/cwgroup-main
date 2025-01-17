@@ -98,7 +98,6 @@ li {
 button {
   cursor: pointer;
   color: #fff;
-  background: #3f51b5;
   border: none;
   padding: 4px 8px;
   border-radius: 4px;

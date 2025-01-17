@@ -66,7 +66,7 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  async function updateProfile(userId: number, newUserData: Partial<IUser>): Promise<any> {
+  async function updateProfile(userId: number, newUserData: Partial<IUserUpdate>): Promise<any> {
     try {
       const response = await fetch(`/api/users/${userId}/`, {
         method: 'PUT',

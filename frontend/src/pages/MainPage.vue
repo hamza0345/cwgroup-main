@@ -101,7 +101,6 @@ button {
   padding: 5px 10px;
   border: none;
   border-radius: 3px;
-  background: #4caf50;
   color: #fff;
   cursor: pointer;
 }
