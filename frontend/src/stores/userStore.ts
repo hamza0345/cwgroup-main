@@ -96,25 +96,7 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  async function reauthenticate(username: string, password: string) {
-    try {
-      const response = await fetch('/login/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to re-authenticate after password change.');
-      }
-
-      const data = await response.json();
-      localStorage.setItem('token', data.token); // Save the new token
-    } catch (error) {
-      console.error('Error during re-authentication:', error);
-      throw error;
-    }
-  }
+ 
 
   async function addHobbyToCurrentUser(hobbyName: string): Promise<void> {
     if (!currentUser.value) return;
