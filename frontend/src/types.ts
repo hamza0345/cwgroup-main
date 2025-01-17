@@ -17,6 +17,11 @@ export interface IFriendRequestPayload {
   action: string;
 }
 
-export interface IUserUpdate extends IUser {
+export interface IUserUpdate {
+  name?: string;
+  email?: string;
+  date_of_birth?: string;
+  hobbies?: string[];
+  username?: string;
   password?: string;
 }

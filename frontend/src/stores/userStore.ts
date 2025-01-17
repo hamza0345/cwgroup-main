@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { IUser } from '../types';
+import type { IUser, IUserUpdate } from '../types';
 import { getCsrfToken } from '../utils/csrf';
 
 export const useUserStore = defineStore('userStore', () => {

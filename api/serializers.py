@@ -17,7 +17,11 @@ class UserSerializer(serializers.ModelSerializer):
     Serialises our CustomUser, including date_of_birth and hobbies,
     plus how many hobbies in common with the requesting user (if annotated).
     """
-    hobbies = HobbySerializer(many=True, read_only=True)
+    hobbies = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='name'
+    )
     # We'll allow an integer field for common hobbies
     common_hobbies = serializers.IntegerField(read_only=True, default=0)
 
