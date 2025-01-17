@@ -82,15 +82,10 @@ ul {
   list-style: none;
   padding: 0;
 }
-li {
-  margin: 0.5rem 0;
-}
 button {
   margin-left: 10px;
-  padding: 5px 10px;
   border: none;
   border-radius: 3px;
-  background: #4caf50;
   color: #fff;
   cursor: pointer;
 }
