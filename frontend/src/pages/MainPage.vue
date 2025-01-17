@@ -6,7 +6,7 @@
     <main>
       <p>Welcome to the Hobbies Single Page Application. Explore your interests and discover new hobbies!</p>
 
-      <div v-if="userStore.currentUser">
+      <div v-if="userStore.currentUser" class="user-friends">
         <h3>Pending Friend Requests</h3>
         <ul>
           <li v-for="fr in userStore.pendingFriendRequests" :key="fr.id">
@@ -72,6 +72,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.user-friends {
+  margin-top: 100px;
+}
+
 .main-page {
   text-align: center;
   padding: 20px;
