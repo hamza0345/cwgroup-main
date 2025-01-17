@@ -1,4 +1,4 @@
-# Template for ECS639U Group Coursework
+# Template for ECS639U Group 41 Coursework
 
 This template should be used as the starting point for your group coursework in the module ECS639U Web Programming (at Queen Mary University of London). Use Git (github.qmul.ac.uk) to collaborate on the coursework with your group members. Module leader: Paulo Oliva <[p.oliva@qmul.ac.uk](mailto:p.oliva@qmul.ac.uk)>
 
@@ -63,3 +63,86 @@ Once your project is ready to be deployed you will need to 'build' the Vue app a
 ## License
 
 This code is dedicated to the public domain to the maximum extent permitted by applicable law, pursuant to [CC0](http://creativecommons.org/publicdomain/zero/1.0/).
+
+## Contributions
+
+### Muhammed Fahim Miah
+- **Expected Tasks**:  
+  - Selenium Testing  
+  - `models.py`  
+  - Templates  
+- **Completed**: All  
+
+---
+
+### Hamza Ahmed
+- **Expected Tasks**:  
+  - `views.api`  
+  - `serializers.py`  
+  - Views for REST API  
+- **Completed**: All  
+
+---
+
+### Ibrahim Kharim
+- **Expected Tasks**:  
+  - User Stores  
+  - Deployment
+  - OpenShift Deployments  
+- **Completed**: All  
+
+---
+
+### Lamain Islam
+- **Expected Tasks**:  
+  - `urls.py` (Routing)  
+  - Vue Pages  
+  - Global CSS  
+- **Completed**: All  
+
+---
+
+## Deployment Link
+[Insert Your Deployed Application URL Here]
+
+---
+
+## Admin Credentials
+- **Username**:  
+  `Admin`  
+- **Password**:  
+  `wq12344`
+
+---
+
+## Test User's Credential
+
+### Test User1 Credentials
+- **Username**:  
+  `User1`  
+- **Password**:  
+  `re11234`
+
+### Test User2 Credentials
+- **Username**:  
+  `User2`  
+- **Password**:  
+  `ht12234`
+
+### Test User3 Credentials
+- **Username**:  
+  `User3`  
+- **Password**:  
+  `xp11224`
+
+### Test User4 Credentials
+- **Username**:  
+  `User4`  
+- **Password**:  
+  `fd12334`
+
+### Test User5 Credentials
+- **Username**:  
+  `User5`  
+- **Password**:  
+  `jf12234`
