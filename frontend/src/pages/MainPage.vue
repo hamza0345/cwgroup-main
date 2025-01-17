@@ -5,13 +5,21 @@
     </header>
     <main>
       <p>Welcome to the Hobbies Single Page Application. Explore your interests and discover new hobbies!</p>
-      
+
       <div v-if="userStore.currentUser">
         <h3>Pending Friend Requests</h3>
         <ul>
           <li v-for="fr in userStore.pendingFriendRequests" :key="fr.id">
             From: {{ fr.from_user }}
             <button @click="acceptFR(fr.id)">Accept</button>
+          </li>
+        </ul>
+
+        <!-- Show the user's friends -->
+        <h3>Your Friends</h3>
+        <ul>
+          <li v-for="f in userStore.friendsList" :key="f.id">
+            {{ f.name }} (username: {{ f.username }})
           </li>
         </ul>
       </div>
@@ -34,9 +42,10 @@ export default defineComponent({
     const userStore = useUserStore();
 
     onMounted(async () => {
-      // If user is logged in, fetch pending friend requests
+      // If user is logged in, fetch pending friend requests & friends
       if (userStore.currentUser) {
         await userStore.fetchFriendRequests();
+        await userStore.fetchFriends();
       }
     });
 
@@ -45,6 +54,8 @@ export default defineComponent({
         await userStore.acceptFriendRequest(friendRequestId);
         // Re-fetch friend requests to remove the one we just accepted
         await userStore.fetchFriendRequests();
+        // Also re-fetch the friends list
+        await userStore.fetchFriends();
         alert('Friend request accepted!');
       } catch (err) {
         console.error(err);
@@ -82,10 +93,15 @@ ul {
   list-style: none;
   padding: 0;
 }
+li {
+  margin: 0.5rem 0;
+}
 button {
   margin-left: 10px;
+  padding: 5px 10px;
   border: none;
   border-radius: 3px;
+  background: #4caf50;
   color: #fff;
   cursor: pointer;
 }

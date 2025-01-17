@@ -34,7 +34,7 @@ export default defineComponent({
   setup() {
     const hobbyStore = useHobbyStore();
     const userStore = useUserStore();
-    const newHobby = ref('');
+    const newHobby = ref<string>('');
 
     const fetchHobbies = async () => {
       try {
@@ -61,7 +61,6 @@ export default defineComponent({
         return;
       }
       try {
-        // We'll call a new function in the user store that updates user hobbies
         await userStore.addHobbyToCurrentUser(hobbyName);
         alert(`"${hobbyName}" added to your profile!`);
       } catch (error) {
@@ -93,11 +92,15 @@ ul {
   list-style: none;
   padding: 0;
 }
+li {
+  margin: 0.5rem 0;
+}
 button {
   cursor: pointer;
   color: #fff;
+  background: #3f51b5;
   border: none;
-
+  padding: 4px 8px;
   border-radius: 4px;
 }
 </style>

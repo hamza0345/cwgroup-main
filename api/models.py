@@ -21,6 +21,28 @@ class CustomUser(AbstractUser):
     # Each user can have multiple hobbies, and each hobby can belong to multiple users
     hobbies = models.ManyToManyField(Hobby, blank=True, related_name='users_with_this_hobby')
 
+    def friends(self):
+        """
+        Return a queryset of users who are friends (i.e. accepted FriendRequest)
+        with this user.
+        We consider both directions: if I'm from_user or to_user.
+        """
+        from .models import FriendRequest
+
+        # Friend requests that this user sent AND were accepted
+        sent = FriendRequest.objects.filter(
+            from_user=self, accepted=True
+        ).values_list('to_user', flat=True)
+
+        # Friend requests that this user received AND were accepted
+        received = FriendRequest.objects.filter(
+            to_user=self, accepted=True
+        ).values_list('from_user', flat=True)
+
+        # Combine these user IDs
+        friend_ids = list(sent) + list(received)
+        return CustomUser.objects.filter(id__in=friend_ids)
+
 
 class FriendRequest(models.Model):
     """

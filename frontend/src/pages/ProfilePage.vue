@@ -20,6 +20,21 @@
           <input v-model="editHobbies" />
         </label>
       </div>
+
+      <!-- OPTIONAL: Fields for changing username and password -->
+      <div>
+        <label>
+          Username:
+          <input id="username-input" v-model="editUsername" />
+        </label>
+      </div>
+      <div>
+        <label>
+          New Password:
+          <input id="password-input" type="password" v-model="editPassword" />
+        </label>
+      </div>
+
       <button @click="saveProfile">Save</button>
     </div>
   </div>
@@ -36,14 +51,17 @@ export default defineComponent({
     const userStore = useUserStore();
     const hobbyStore = useHobbyStore();
 
-    const editName = ref('');
-    const editEmail = ref('');
-    const editDOB = ref('');
-    const editHobbies = ref('');
+    const editName = ref<string>('');
+    const editEmail = ref<string>('');
+    const editDOB = ref<string>('');
+    const editHobbies = ref<string>('');
+
+    // For changing username and password
+    const editUsername = ref<string>('');
+    const editPassword = ref<string>('');
 
     onMounted(async () => {
-      const userId =
-        userStore.currentUser?.id ||
+      const userId = userStore.currentUser?.id ||
         parseInt(localStorage.getItem('myUserId') || '0', 10);
 
       if (userId) {
@@ -55,6 +73,7 @@ export default defineComponent({
           editEmail.value = userStore.currentUser.email;
           editDOB.value = userStore.currentUser.date_of_birth || '';
           editHobbies.value = userStore.currentUser.hobbies.join(', ');
+          editUsername.value = userStore.currentUser.username; // new
         }
       }
     });
@@ -64,7 +83,7 @@ export default defineComponent({
 
       const hobbiesArray = editHobbies.value
         .split(',')
-        .map((h) => h.trim())
+        .map(h => h.trim())
         .filter(Boolean);
 
       try {
@@ -73,6 +92,8 @@ export default defineComponent({
           email: editEmail.value,
           date_of_birth: editDOB.value || undefined,
           hobbies: hobbiesArray,
+          username: editUsername.value || undefined,
+          // password: editPassword.value || undefined,
         });
         alert('Profile updated successfully!');
       } catch (error) {
@@ -88,6 +109,8 @@ export default defineComponent({
       editEmail,
       editDOB,
       editHobbies,
+      editUsername,
+      editPassword,
       saveProfile,
     };
   },
@@ -122,5 +145,6 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  background-color: #4CAF50;
 }
 </style>

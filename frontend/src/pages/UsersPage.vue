@@ -14,13 +14,16 @@
     <ul>
       <li v-for="user in userStore.users" :key="user.id">
         <strong>{{ user.name }}</strong>
-        ({{ user.common_hobbies }} common hobbies)
+        <!-- Show how many hobbies in common -->
+        <span v-if="user.common_hobbies !== undefined && user.common_hobbies > 0">
+          ({{ user.common_hobbies }} common hobbies)
+        </span>
         <button @click="sendFriendRequest(user.id)">Send Friend Request</button>
       </li>
     </ul>
 
     <div class="pagination">
-      <button 
+      <button
         :disabled="page <= 1"
         @click="prevPage"
       >
@@ -47,13 +50,17 @@ export default defineComponent({
     const userStore = useUserStore();
     const minAge = ref<number | null>(null);
     const maxAge = ref<number | null>(null);
-    const page = ref(1);
+    const page = ref<number>(1);
 
     const fetchUsers = async () => {
       const params = new URLSearchParams();
       params.append('page', page.value.toString());
-      if (minAge.value) params.append('min_age', minAge.value.toString());
-      if (maxAge.value) params.append('max_age', maxAge.value.toString());
+      if (minAge.value !== null) {
+        params.append('min_age', minAge.value.toString());
+      }
+      if (maxAge.value !== null) {
+        params.append('max_age', maxAge.value.toString());
+      }
 
       try {
         await userStore.fetchUsers(params);
@@ -114,5 +121,8 @@ export default defineComponent({
 }
 .pagination {
   margin-top: 1em;
+}
+.page-info {
+  margin: 0 1em;
 }
 </style>

@@ -6,7 +6,7 @@ import { getCsrfToken } from '../utils/csrf';
 export const useHobbyStore = defineStore('hobbyStore', () => {
   const hobbies = ref<IHobby[]>([]);
 
-  async function fetchHobbies() {
+  async function fetchHobbies(): Promise<void> {
     try {
       const response = await fetch('/api/hobbies/', {
         method: 'GET',
@@ -23,7 +23,7 @@ export const useHobbyStore = defineStore('hobbyStore', () => {
     }
   }
 
-  async function addHobby(hobbyName: string) {
+  async function addHobby(hobbyName: string): Promise<void> {
     try {
       const response = await fetch('/api/hobbies/', {
         method: 'POST',
@@ -36,7 +36,7 @@ export const useHobbyStore = defineStore('hobbyStore', () => {
       if (!response.ok) {
         throw new Error('Failed to create hobby');
       }
-      // After creating, we refetch the global list so everything is up to date
+      // After creating, we refetch the global list
       await fetchHobbies();
     } catch (error) {
       console.error('Error adding a hobby:', error);

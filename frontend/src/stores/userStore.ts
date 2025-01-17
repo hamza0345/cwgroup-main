@@ -6,19 +6,20 @@ import { getCsrfToken } from '../utils/csrf';
 export const useUserStore = defineStore('userStore', () => {
   const currentUser = ref<IUser | null>(null);
   const users = ref<IUser[]>([]);
-  const hasNext = ref(false);
-  const totalPages = ref(1);
+  const hasNext = ref<boolean>(false);
+  const totalPages = ref<number>(1);
 
   // We'll store pending friend requests for the current user
-  const pendingFriendRequests = ref<any[]>([]); // you can define a type if you want
+  const pendingFriendRequests = ref<any[]>([]);
 
-  async function fetchMe(userId: number) {
+  // We'll store the list of friends for the current user
+  const friendsList = ref<IUser[]>([]);
+
+  async function fetchMe(userId: number): Promise<void> {
     try {
       const response = await fetch(`/api/users/${userId}/`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
       if (!response.ok) {
         console.error('Error fetching user profile');
@@ -30,13 +31,11 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  async function fetchCurrentUser() {
+  async function fetchCurrentUser(): Promise<void> {
     try {
       const response = await fetch('/api/users/current/', {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
       if (!response.ok) {
         console.error('Error fetching current user');
@@ -48,13 +47,11 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  async function fetchUsers(params: URLSearchParams) {
+  async function fetchUsers(params: URLSearchParams): Promise<void> {
     try {
       const response = await fetch(`/api/users/?${params.toString()}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
       if (!response.ok) {
         console.error('Error fetching users');
@@ -69,7 +66,7 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  async function updateProfile(userId: number, newUserData: Partial<IUser>) {
+  async function updateProfile(userId: number, newUserData: Partial<IUser>): Promise<any> {
     try {
       const response = await fetch(`/api/users/${userId}/`, {
         method: 'PUT',
@@ -95,16 +92,14 @@ export const useUserStore = defineStore('userStore', () => {
 
   /**
    * Add a single hobby to the user's current hobby list.
-   * We'll fetch the latest user data, add the new hobby to the array, then call updateProfile.
    */
-  async function addHobbyToCurrentUser(hobbyName: string) {
+  async function addHobbyToCurrentUser(hobbyName: string): Promise<void> {
     if (!currentUser.value) return;
     // Re-fetch the user to get their latest hobbies
     await fetchMe(currentUser.value.id);
 
     const existingHobbies = currentUser.value.hobbies || [];
     if (existingHobbies.includes(hobbyName)) {
-      // Already in user's hobby list
       return;
     }
     const newHobbies = [...existingHobbies, hobbyName];
@@ -113,7 +108,7 @@ export const useUserStore = defineStore('userStore', () => {
     });
   }
 
-  async function sendFriendRequest(toUserId: number) {
+  async function sendFriendRequest(toUserId: number): Promise<any> {
     try {
       const response = await fetch('/api/friend-requests/', {
         method: 'POST',
@@ -136,13 +131,11 @@ export const useUserStore = defineStore('userStore', () => {
   /**
    * Fetch friend requests where the current user is the 'to_user' and accepted=false (pending).
    */
-  async function fetchFriendRequests() {
+  async function fetchFriendRequests(): Promise<void> {
     try {
       const response = await fetch('/api/friend-requests/', {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
       if (!response.ok) {
         throw new Error('Failed to fetch friend requests');
@@ -154,7 +147,7 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
-  async function acceptFriendRequest(friendRequestId: number) {
+  async function acceptFriendRequest(friendRequestId: number): Promise<any> {
     try {
       const response = await fetch('/api/friend-requests/', {
         method: 'PUT',
@@ -177,12 +170,34 @@ export const useUserStore = defineStore('userStore', () => {
     }
   }
 
+  /**
+   * Fetch the list of friends for the current user from
+   * /api/users/current/friends/
+   */
+  async function fetchFriends(): Promise<void> {
+    if (!currentUser.value) return;
+    try {
+      const response = await fetch('/api/users/current/friends/', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch friends');
+      }
+      const data = await response.json();
+      friendsList.value = data; // data is an array of user objects
+    } catch (error) {
+      console.error('Error fetching friends:', error);
+    }
+  }
+
   return {
     currentUser,
     users,
     hasNext,
     totalPages,
     pendingFriendRequests,
+    friendsList,
     fetchMe,
     fetchCurrentUser,
     fetchUsers,
@@ -191,5 +206,6 @@ export const useUserStore = defineStore('userStore', () => {
     sendFriendRequest,
     fetchFriendRequests,
     acceptFriendRequest,
+    fetchFriends,
   };
 });
