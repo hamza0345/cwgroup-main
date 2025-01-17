@@ -40,7 +40,9 @@ To run this project in your development machine, follow these steps:
     $ npm run dev
     ```
 
-8. Open your browser and go to http://localhost:5173, you will be greeted with a template page.
+8. Make sure your localhost link is http://localhost:5173
+
+9. Open your browser and go to http://localhost:8000/login
 
 ## OpenShift deployment
 
